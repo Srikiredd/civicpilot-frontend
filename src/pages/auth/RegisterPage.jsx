@@ -1,0 +1,14 @@
+import React from "react";
+import { useState } from "react";
+import { ArrowRight, Eye, EyeOff, ShieldCheck } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import {  useAuth  } from "../../hooks/useAuth";
+import Logo from "../../components/layout/Logo";
+import Button from "../../components/common/Button";
+import ErrorMessage from "../../components/common/ErrorMessage";
+import {  errorMessage  } from "../../utils/helpers";
+export default function RegisterPage(){
+ const {register,loading}=useAuth(); const nav=useNavigate(); const [show,setShow]=useState(false); const [error,setError]=useState(""); const [success,setSuccess]=useState(""); const [form,setForm]=useState({name:"",email:"",password:"",confirmPassword:""});
+ const submit=async e=>{e.preventDefault();setError("");setSuccess("");if(!form.name||!form.email||!form.password){setError("Complete all required fields.");return}if(form.password!==form.confirmPassword){setError("Passwords do not match.");return}try{await register({name:form.name,fullName:form.name,email:form.email,password:form.password});setSuccess("Registration successful. You can now sign in.");setTimeout(()=>nav("/login"),900);}catch(err){setError(errorMessage(err,"Registration failed. Please try again."));}};
+ return <div className="auth-page"><div className="auth-brand"><Logo/></div><div className="auth-layout"><div className="auth-art"><span className="hero-badge"><ShieldCheck size={14}/> BUILT FOR CITIZENS</span><h1>One place for your government-service journey.</h1><p>Create an account and keep your problem analysis, journeys and readiness checks in one secure workspace.</p></div><div className="auth-card"><div className="auth-card-head"><span className="eyebrow">CREATE ACCOUNT</span><h2>Join CivicPilot AI</h2><p>Start your citizen journey workspace.</p></div><ErrorMessage message={error}/>{success&&<div className="success-box">{success}</div>}<form onSubmit={submit} className="form-stack"><label>Full name<input value={form.name} onChange={e=>setForm({...form,name:e.target.value})} placeholder="Your full name"/></label><label>Email<input type="email" value={form.email} onChange={e=>setForm({...form,email:e.target.value})} placeholder="you@example.com"/></label><label>Password<div className="password-wrap"><input type={show?"text":"password"} value={form.password} onChange={e=>setForm({...form,password:e.target.value})} placeholder="Create a password"/><button type="button" onClick={()=>setShow(!show)}>{show?<EyeOff/>:<Eye/>}</button></div></label><label>Confirm password<input type="password" value={form.confirmPassword} onChange={e=>setForm({...form,confirmPassword:e.target.value})} placeholder="Repeat your password"/></label><Button type="submit" loading={loading}>Create account <ArrowRight size={17}/></Button></form><p className="auth-switch">Already registered? <Link to="/login">Sign in</Link></p></div></div></div>;
+}
